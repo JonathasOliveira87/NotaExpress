@@ -1,0 +1,40 @@
+main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding-top: 8%;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+}
+
+.logo > h1 {
+    background: linear-gradient(to left, #F0C020 60%, var(--text-color) 60%);
+    background-clip: text;
+    color: transparent;
+    display: inline;
+}
+
+.menu {
+    width: 300px;
+    height: 70px;
+    margin: 3px auto;
+    background-color: var(--button-background);
+    color: var(--button-color);
+    border-radius: 5px;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: none;
+}
+
+.menu:hover {
+    outline: none;
+    box-shadow: 0 0 0 5px var(--form-border-focus);
+    background-color: var(--button-background-hover);
+    z-index: 1;
+}
