@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Login de Usuário{% endblock %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+
+    <main>
+
+        <form action="{% url 'login' %}" method="POST">
+            {% csrf_token %}
+            <div class="logo">
+                <img src="{% static 'img/noteLogo.png' %}" alt="logotipo"><h1>NotaExpress</h1>
+            </div>
+            <p>Por favor, logue-se</p>
+            <input type="text" id="username" name="username" required placeholder="Email">
+
+            <!--<input type="email" id="email" name="email" required placeholder="Email">-->
+
+            <input type="password" id="password" name="password" required placeholder="Password">
+
+            <input type="submit" value="Entrar">
+        </form>
+
+    </main>
+
+{% endblock %}

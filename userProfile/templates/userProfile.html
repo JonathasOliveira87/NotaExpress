@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Editar Produtoo{% endblock %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<main>
+
+    <article>
+        <h1>
+            <a href="{% url 'menu' %}"><button class="menu">Voltar para Menu</button></a>
+        </h1>
+
+        <div class="container">
+            <div class="content">
+                <div class="user-form">
+                    <h1>Olá {{ request.user.username }}</h1>
+                    <form id="photo-form" action="{% url 'profile_user' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="update_photo">
+                        <div class="box-photo">
+                            {% if profile.profile_pic %}
+                                <a id="profile-photo-link" class="text-center" ><img class="profile-photo" src="{{ profile.profile_pic.url }}"></a>
+                            {% else %}
+                                <a id="profile-photo-link"><img class="profile-photo" src="{% static 'img/no-photo.jpg' %}"></a>
+                            {% endif %}
+                        </div>
+                        <input  type="file" name="update_photo" id="update_photo">
+                        <br>
+                        <input type="submit" value="Atualizar Foto">
+                        <br>
+
+                        <table>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                            </tr>
+                            <tr>
+                                <td>{{ request.user.username }}</td>
+                                <td>{{ request.user.email }}</td>
+                            </tr>
+                        </table>      
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="content">
+                <div class="user-form">
+                    <h1>Trocar email</h1>
+
+                    <form action="{% url 'profile_user' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="update_email">
+                        <label for="new_email">Novo email:</label>
+                        <input type="email" id="new_email" name="new_email" required placeholder="Digite seu novo email">
+                        <label for="confirm_email">Confirme email:</label>
+                        <input type="email" id="confirm_email" name="confirm_email" required placeholder="Digite seu novo email novamente">
+                        <input type="submit" value="Atualizar E-mail">
+                        <br><br>
+                    </form>
+        
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="content">
+                <div class="user-form">
+                    <h1>Trocar senha</h1>
+
+                    <form action="{% url 'profile_user' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="update_password">
+                        <label for="current_password">Senha Atual:</label>
+                        <input type="password" id="current_password" name="current_password" required placeholder="Digite sua senha atual">
+                        <label for="new_password">Nova senha:</label>
+                        <input type="password" id="new_password" name="new_password" required placeholder="Digite sua nova senha">
+                        <label for="confirm_password">Confirme a senha:</label>
+                        <input type="password" id="confirm_password" name="confirm_password" required placeholder="Digite sua senha novamente">
+                        <br><br>
+                        <input type="submit" value="Atualizar Senha">
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </article>
+    
+</main>
+
+{% endblock %}
