@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Cadastrar Produto{% endblock %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<main>
+    <article>
+        <h1>
+            <a href="{% url 'menu' %}"><button class="menu">Início</button></a>|
+            <a href="{% url 'cadProduto' %}"><button class="menu">Cadastrar Produto</button></a>|
+            <a href="{% url 'verEstoque' %}"><button class="menu">Ver Estoque</button></a>
+        </h1>
+
+        <form method="post" action="{% url 'cadProduto' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h2>Cadastrar Produto</h2> 
+            <div class="content">
+                <div class="sidebyside">
+                    <div class="form">
+                        <label for="nome">Nome do produto:</label>
+                        <input type="text" id="nome" name="nome" required>
+
+                        <label for="preco">Preço de custo R$:</label>
+                        <input type="text" id="preco" name="preco" required onblur="formatarMoeda(this)" placeholder="Digite o valor e use virgula(,) para centavos">
+
+                        <label for="quantidade">Quantidade:</label>
+                        <input type="number" id="quantidade" name="quantidade" required>
+
+                        <label for="categoria">Local:</label>
+                        <select id="local" name="local" required>
+                            <option value="" disabled selected>Selecione um local</option>
+                            {% for loc in local %}
+                                <option value="{{ loc.id }}">{{ loc.local }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form">
+
+                        <label for="nomeForn">Nome do fernecedor:</label>
+                        <input type="text" id="nomeForn" name="nomeForn" required>
+
+                        <label for="codigo">Código do produto:</label>
+                        <input type="number" id="codigo" name="codigo" required>
+
+                        <label for="categoria">Categoria do produto:</label>
+                        <select id="categoria" name="categoria" required>
+                            <option value="" disabled selected>Selecione uma categoria</option>
+                            {% for cat in categorias %}
+                                <option value="{{ cat.id }}">{{ cat.categoria }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                    </div>
+                    <div class="form">
+                        <div class="box-photo">
+                            <a id="profile-photo-link">
+                                <img id="produto-photo-preview" class="produto-photo" src="{% static 'img/produto_sem_foto.png' %}">
+                            </a>
+                            <input type="file" name="update_photo" id="update_photo" onchange="previewImage()">
+                        </div>
+                    </div>
+                </div>  
+                <input type="submit" value="Cadastrar Produto">
+            </div>
+        </form>  
+  
+    </article>
+</main>
+
+{% endblock %}

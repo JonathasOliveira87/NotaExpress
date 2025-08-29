@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Ver Estoque{% endblock %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<main>
+    <article>
+        <h1>
+            <a href="{% url 'menu' %}"><button class="menu">Início</button></a>|
+            <a href="{% url 'cadProduto' %}"><button class="menu">Cadastrar Produto</button></a>|
+            <a href="{% url 'verEstoque' %}"><button class="menu">Ver Estoque</button></a>
+        </h1>
+
+
+    <article>
+
+        <div class="container" style="max-height: 70vh; overflow-y: auto;">
+
+            <form class="search" action="{% url 'verEstoque' %}" method="GET">
+                <input type="text" name="qProduto" placeholder="Buscar Produto" value="{{ request.GET.qProduto }}">
+                <button type="submit" class="search-icon" aria-label="Pesquisar">
+                    <img src="{% static 'img/lupa.png' %}" alt="lupa">
+                </button>
+            </form>
+
+            <h2>Estoque Geral</h2> 
+            <table class="verEstoqueTabela">
+                <tr>
+                    <th>Nome</th>
+                    <th>Quantidade</th>
+                    <th>Preço</th>
+                    <th>Fornecedor</th>
+                    <th>Codigo</th>
+                </tr>
+                {% for produto in produtos %}
+                <tr>
+                   <td><p style="margin: 10px;">{{ produto.nome }}</p>
+                        
+                        <a style="border: 1px solid #000; padding: 5px; border-radius: 3px;" href="{% url 'verProduto' produto.id %}">Ver Produto</a>
+                        <a style="border: 1px solid #000; padding: 5px; border-radius: 3px;"  href="{% url 'editarProduto' produto.id %}">Editar Produto</a>
+                    </td>
+
+                    <td>{{ produto.quantidade }}</td>
+                    <td>{{ produto.preco }}</td>
+                    <td>{{ produto.nome_fornecedor }}</td>
+                    <td>{{ produto.codigo }} </td>
+                </tr>
+                {% endfor %}
+            </table>                
+        </div>
+    </article>
+
+</main>
+
+{% endblock %}
+

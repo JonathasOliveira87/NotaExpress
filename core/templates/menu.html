@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Menu{% endblock %}
+
+{% block content %}
+    <head>
+        <link rel="stylesheet" href="{% static 'css/menu.css' %}">
+    </head>
+    <main>
+        <div class="logo">
+            <img src="{% static 'img/noteLogo.png' %}" alt="logotipo"><h1>NotaExpress</h1>
+        </div>
+        <h3>Por favor, escolha uma opção</h3>
+        <br>
+        <a href="{% url 'dashboard' %}"><button class="menu">DashBoard</button></a>
+        <a href="{% url 'criarNota' %}"><button class="menu">Controle de Notas</button></a>
+        <a href="{% url 'cadProduto' %}"><button class="menu">Controle de Estoque</button></a>
+        <br>
+        <br>
+        <h4>Suporte: seunome@beeplan.co</h4>
+
+    </main>
+
+{% endblock %}

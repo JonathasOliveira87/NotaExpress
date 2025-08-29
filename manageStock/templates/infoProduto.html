@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Editar Produtoo{% endblock %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<main>
+    <article>
+        <h1>
+            <a href="{% url 'menu' %}"><button class="menu">Início</button></a>|
+            <a href="{% url 'cadProduto' %}"><button class="menu">Cadastrar Produto</button></a>|
+            <a href="{% url 'verEstoque' %}"><button class="menu">Ver Estoque</button></a>
+        </h1>
+
+        <h2>Informações do Produto</h2> 
+        <div class="content" style="margin: 10px; text-align: center;">
+
+            <div style="text-align: justify; max-width: fit-content; margin: auto;">
+        
+                <a id="profile-photo-link" style="display: block; text-align: center;">
+                    {% if produto.foto_produto %}
+                        <img id="produto-photo-preview" class="produto-photo" src="{{ produto.foto_produto.url }}" style="display: block; margin: 0 auto;">
+                    {% else %}
+                        <img id="produto-photo-preview" class="produto-photo" src="{% static 'img/produto_sem_foto.png' %}" style="display: block; margin: 0 auto;">
+                    {% endif %}
+                </a>
+        
+                <h2>Nome do produto: {{ produto.nome }}"</h2>
+                <h2>Preço de custo R$: {{ produto.preco }}</h2>
+                <h2>Quantidade: {{ produto.quantidade }}</h2>
+                <h2>Local: {{ produto.local_produto }}</h2>
+                <h2>Nome do fornecedor: {{ produto.nome_fornecedor }}"</h2>
+                <h2>Código do produto: {{ produto.codigo }}</h2>
+                <h2>Categoria do produto: {{ produto.categoria_produto }}</h2>
+            </div>
+        </div>
+        <br>
+
+    </article>
+</main>
+
+{% endblock %}
