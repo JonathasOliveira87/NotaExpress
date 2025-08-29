@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Informações da Nota{% endblock %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Estilos adicionais podem ser adicionados aqui */
+        .box {
+            display: inline-block;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+
+<main>
+    <article>
+        <h1>
+            <a href="{% url 'menu' %}"><button class="menu">Início</button></a>|
+            <a href="{% url 'criarNota' %}"><button class="menu">Criar Notas</button></a>|
+            <a href="{% url 'listarNota' %}"><button class="menu">Listar Notas</button></a>|
+            <a href="{% url 'listarOrdem' %}"><button class="menu">Listar Ordens</button></a>
+        </h1>
+
+        <div class="container">
+            <h2>Informações da Nota</h2> 
+            <div class="content" style="width: 100%;">           
+   
+                <div class="nota-detail-item">
+                    <label for="">Título:</label>
+                    <span class="value">{{ nota.titulo }}</span>
+                </div>
+                <div class="nota-detail-item">
+                    <label for="">Nota:</label>
+                    <span class="value">{{ nota.numero|stringformat:"06d" }}</span>
+                </div>
+                <div class="nota-detail-item">
+                    <label for="">Setor:</label>
+                    <span class="value">{{ nota.setor }}</span>
+                </div>
+
+                <div class="nota-detail-item">
+                    <label for="">Tag:</label>
+                    <span class="value">{{ nota.tag }}</span>
+                </div><br>
+                <div class="nota-detail-item">
+                    <label for="">Descrição:</label>
+                    <textarea name="" id="" readonly>{{ nota.descricao }}</textarea>
+                </div>
+                <div class="nota-data">
+                    <label for="">Nota criada em:</label>
+                    <span class="value">{{ nota.data_criacao }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <hr>
+        <h2 style="padding: 20px 0 0 50px;">Criar ordem de serviço</h2>
+        <form action="{% url 'criarOrdem'  %}" method="post">
+
+            {% csrf_token %}
+
+            <div class="container">
+                
+                <div style="margin: 5px;">
+                    <label for="hinicio">Hora Início:</label>
+                    <input type="datetime-local" name="hinicio" id="hinicio" >
+                    
+                    <label for="hfim">Hora Fim:</label>
+                    <input type="datetime-local" name="hfim" id="hfim" >
+                    
+                    <label>Total:</label>
+                    <span id="totalHoras" style="color: brown; font-weight: bolder; margin-right: 10px;">0 Horas</span>
+
+                    <br><br><br>
+
+                    <!-- Campos ocultos para armazenar informações do js -->
+                    <input type="hidden" id="totalHorasInput" name="totalHoras" value="0">
+                    <input type="hidden" id="itensRequisitadosInput" name="itensRequisitados">
+                    <input type="hidden" id="precoTotalInput" name="precoTotal" value="0">
+                    <input type="hidden" name="id_nota" value="{{ nota.numero }}">
+                    <input type="hidden" id="quantidade" name="quantidade" value="[]">
+
+
+                    <h2>Estoque Geral</h2> 
+                    <div style="max-height: 20vh; overflow-y: auto; padding-top: 10px;">
+                        <table class="infoNotaTabala">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço</th>
+                                    <th>Adicionar</th>
+                                </tr>
+                            </thead>
+                            <tbody class="estoque-principal">
+                                {% for produto in produtos %}
+                                <tr>
+                                    <td>{{ produto.nome }}</td>
+                                    <td>{{ produto.quantidade }}</td>
+                                    <td>{{ produto.preco }}</td>
+                                    <td><button class="add-btn" data-produto="{{ produto.pk }}" data-preco-original="{{ produto.preco }}"><span>&#43;</span></button></td>
+                                    <!-- Campos ocultos para armazenar informações do js -->
+                                    <input type="hidden" name="id_produto[]" value="{{ produto.codigo }}">
+                                    
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table> 
+                    </div>
+
+                    <br><br><br>
+
+                    <h2>Itens para Requisitar</h2> 
+                    <div>
+                        <table id="itensTable" class="infoNotaTabala">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço</th>
+                                    <th>Remover</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Aqui serão adicionados os itens -->
+                            </tbody>
+                        </table> 
+                    </div>
+                    <br><br><br>
+                    <div id="precoTotalContainer">
+                        <label for="precoTotal">Preço Total:</label>
+                        <span id="precoTotal">R$ 0,00</span>
+                    </div>
+                    <br><br><br>
+                    <hr>
+                    <input type="submit" value="Criar Ordem">
+                </div>
+            </div>
+        </form>
+    </article>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Função para coletar as quantidades de cada produto na tabela de estoque principal
+    function coletarQuantidadesEstoque() {
+        const produtosEstoque = document.querySelectorAll('tbody.estoque-principal tr');
+        const quantidadesEstoque = [];
+        produtosEstoque.forEach(function(produto) {
+            const quantidade = parseInt(produto.cells[1].textContent);
+            quantidadesEstoque.push(quantidade);
+        });
+        return quantidadesEstoque;
+    }
+
+    // Adicionar evento de clique para adicionar itens
+    const addButtons = document.querySelectorAll('.add-btn');
+    addButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            event.preventDefault(); // Evitar que o formulário seja submetido
+            const row = button.parentNode.parentNode;
+            const produtoNome = row.cells[0].textContent;
+            const produtoPreco = parseFloat(row.cells[2].textContent.replace(',', '.')); // Converter a string para float
+            const precoOriginal = parseFloat(button.getAttribute('data-preco-original').replace(',', '.'));// Obter o preço original do produto do botão de adicionar
+            const produtoId = button.getAttribute('data-produto'); // Obter o id único do produto
+            const itensTable = document.querySelector('#itensTable tbody');
+            let itemExists = false;
+
+            // Verificar se o item já existe na tabela
+            const existingItems = itensTable.querySelectorAll('tr');
+            existingItems.forEach(function(item) {
+                if (item.cells[0].textContent === produtoNome) {
+                    // Incrementar a quantidade e atualizar o preço total
+                    let quantidade = parseInt(item.cells[1].textContent) + 1;
+                    item.cells[1].textContent = quantidade;
+                    item.cells[2].textContent = (quantidade * precoOriginal).toFixed(2);
+                    itemExists = true;
+                }
+            });
+
+            // Se o item não existir, adicionar uma nova linha
+            if (!itemExists) {
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${produtoNome}</td>
+                    <td>1</td>
+                    <td>${precoOriginal.toFixed(2)}</td>
+                    <td><button class="remove-btn" data-preco-original="${precoOriginal}">&#8722;</button></td>
+                `;
+                itensTable.appendChild(newRow);
+            }
+
+
+
+ 
+            // Atualizar a quantidade do produto no estoque geral (opcional)
+            nova_qtd = row.cells[1].textContent = parseInt(row.cells[1].textContent) - 1;
+
+
+
+
+
+            // Remover o botão de adicionar do produto se a quantidade chegar a 0
+            if (parseInt(row.cells[1].textContent) === 0) {
+                button.disabled = true;
+            }
+
+            // Coletar as quantidades de cada produto no estoque principal e atualizar o valor do input hidden
+            const quantidadesEstoque = coletarQuantidadesEstoque();
+            document.getElementById('quantidade').value = JSON.stringify(quantidadesEstoque);
+        });
+    });
+
+
+    // Adicionar evento de clique para remover itens
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('remove-btn')) {
+            event.preventDefault(); // Evitar que o formulário seja submetido
+            const rowToRemove = event.target.parentNode.parentNode;
+            const productName = rowToRemove.cells[0].textContent;
+            let productQuantity = parseInt(rowToRemove.cells[1].textContent);
+            const precoOriginal = parseFloat(event.target.getAttribute('data-preco-original')); // Obter o preço original do produto do botão de remover
+
+            // Decrementar a quantidade do item na tabela de itens para requisitar
+            productQuantity--;
+
+
+            // Atualizar a quantidade do produto no estoque geral
+            const addButtons = document.querySelectorAll('.add-btn');
+            addButtons.forEach(function(button) {
+                const row = button.parentNode.parentNode;
+                const productNameInRow = row.cells[0].textContent;
+                if (productName === productNameInRow) {
+                    row.cells[1].textContent = parseInt(row.cells[1].textContent) + 1; // Incrementar a quantidade na tabela de estoque geral
+                    button.disabled = false;
+                }
+            });
+
+
+            // Atualizar a quantidade na tabela
+            rowToRemove.cells[1].textContent = productQuantity;
+
+            // Atualizar o preço total de acordo com a nova quantidade e o preço original do produto
+            const novoPrecoTotal = (productQuantity * precoOriginal).toFixed(2);
+            rowToRemove.cells[2].textContent = novoPrecoTotal;
+
+            // Remover o item se a quantidade chegar a 0
+            if (productQuantity === 0) {
+                rowToRemove.parentNode.removeChild(rowToRemove);
+            }
+        }
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Função para calcular o preço total dos itens na tabela
+    function calcularPrecoTotal() {
+        const itensTable = document.querySelector('#itensTable tbody');
+        const itens = itensTable.querySelectorAll('tr');
+        let precoTotal = 0;
+        itens.forEach(function(item) {
+            const precoItem = parseFloat(item.cells[2].textContent.replace('R$', '').replace(',', '.'));
+            precoTotal += precoItem;
+        });
+        document.getElementById('precoTotal').textContent = 'R$ ' + precoTotal.toFixed(2);
+        // Atualizar o valor do campo oculto para total de horas
+        document.getElementById('precoTotalInput').value = precoTotal;
+        // Atualizar o valor do campo oculto para a quantidade total de estoque
+        document.getElementById('quantidade').value = quantidadeTotal;
+    }
+
+    // Adicionar evento de clique para adicionar itens
+    const addButtons = document.querySelectorAll('.add-btn');
+    addButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            // Restante do código de adicionar itens...
+            calcularPrecoTotal();
+        });
+    });
+
+    // Adicionar evento de clique para remover itens
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('remove-btn')) {
+            // Restante do código de remover itens...
+            calcularPrecoTotal();
+        }
+    });
+});
+
+</script>
+
+
+
+{% endblock %}

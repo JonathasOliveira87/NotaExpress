@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Lista de Notas{% endblock %}
+
+{% block content %}
+
+  <head>
+      <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  </head>
+
+
+    <main>
+        <article>
+            <h1>
+                <a href="{% url 'menu' %}"><button class="menu">Início</button></a>|
+                <a href="{% url 'criarNota' %}"><button class="menu">Criar Notas</button></a>|
+                <a href="{% url 'listarNota' %}"><button class="menu">Listar Notas</button></a>|
+                <a href="{% url 'listarOrdem' %}"><button class="menu">Listar Ordens</button></a>
+            </h1>
+            {% if notas %}
+
+                <div class="container" style="max-height: 100vh; overflow-y: auto;">
+                    
+                    <form class="search" action="{% url 'listarNota' %}" method="GET">
+                        <input type="text" name="qNota" placeholder="Buscar Nota" value="{{ request.GET.qNota }}">
+                        <button type="submit" class="search-icon" aria-label="Pesquisar">
+                            <img src="{% static 'img/lupa.png' %}" alt="lupa">
+                        </button>
+                    </form>
+          
+
+                    <table class="listarNotaTabala">
+                        <tr>
+                            <th>Nota</th>
+                            <th>Título</th>
+                            <th>Setor</th>
+                            <th>Nota criada em</th>
+                            <th>Criada por</th>
+                            <th>Tag</th>
+                        </tr>
+                        {% for nota in notas %}
+                        {% if not nota.fechada %}
+                            <tr>
+                                <td><a href="{% url 'infoNota' ver_nota=nota.numero %}"> {{ nota.numero|stringformat:"06d" }} </a></td>
+                                <td>{{ nota.titulo|truncatechars:50 }}</td>
+                                <td>{{ nota.setor }}</td>
+                                <td>{{ nota.data_criacao }}</td>
+                                <td>{{ nota.criado_por }}</td> 
+                                <td>{{ nota.tag }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    </table>           
+                </div>
+
+            {% else %}
+            <div class="container">
+            <p>Não existe notas criadas</p>       
+            </div> 
+            {% endif %}   
+        </article>
+
+    </main>
+
+{% endblock %}

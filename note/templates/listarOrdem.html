@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Informações da Ordem{% endblock %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<main>
+    <article>
+        <h1>
+            <a href="{% url 'menu' %}"><button class="menu">Início</button></a>|
+            <a href="{% url 'criarNota' %}"><button class="menu">Criar Notas</button></a>|
+            <a href="{% url 'listarNota' %}"><button class="menu">Listar Notas</button></a>|
+            <a href="{% url 'listarOrdem' %}"><button class="menu">Listar Ordens</button></a>
+
+        </h1>
+
+        {% if ordens %}
+            <div class="container" style="max-height: 100vh; overflow-y: auto;">
+                <form class="search" action="{% url 'listarOrdem' %}" method="GET">
+                    <input type="text" name="qOrdem" placeholder="Buscar Ordem" value="{{ request.GET.qOrdem }}">
+                    <button type="submit" class="search-icon" aria-label="Pesquisar">
+                        <img src="{% static 'img/lupa.png' %}" alt="lupa">
+                    </button>
+                </form>
+    
+
+                <table class="listarNotaTabala">
+                    <tr>
+                        <th>Ordem</th>
+                        <th>Título</th>
+                        <th>Setor</th>
+                        <th>Ordem criada em</th>
+                        <th>Criada por</th>
+
+                    </tr>
+                    {% for ordem in ordens %}
+                    {% if ordem.status == 'aberto' %}
+                        <tr>
+                            <td><a href="{% url 'infoOrdem' ver_ordem=ordem.id_hexadecimal %}"> {{ ordem.id_hexadecimal }} </a></td>
+                            <td>{{ ordem.nota.titulo|truncatechars:50 }}</td>
+                            <td>{{ ordem.nota.setor }}</td>
+                            <td>{{ ordem.data_criacao }}</td>
+                            <td>{{ ordem.orderm_criado_por }}</td> 
+                        </tr>
+                    {% elif ordem.status == 'encerrado' and user.is_staff %}
+                        <tr>
+                            <td><a href="{% url 'infoOrdem' ver_ordem=ordem.id_hexadecimal %}"> {{ ordem.id_hexadecimal }} </a></td>
+                            <td>{{ ordem.nota.titulo|truncatechars:50 }}</td>
+                            <td>{{ ordem.nota.setor }}</td>
+                            <td>{{ ordem.data_criacao }}</td>
+                            <td>{{ ordem.orderm_criado_por }}</td> 
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+
+                </table>           
+            </div>
+            {% else %}
+            <div class="container">
+            <p>Não existe ordens criadas</p>       
+            </div> 
+        {% endif %}   
+</article>
+
+</main>
+
+{% endblock %}

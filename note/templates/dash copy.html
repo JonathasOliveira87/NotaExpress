@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}DashBoard{% endblock %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/5.1.0/screenfull.min.js"></script>
+</head>
+
+<main class="show">
+
+    <article id="dashboard-container" class="show">  <!-- Adicione um ID ao elemento <article> -->
+        <h1>
+          <a href="{% url 'criarNota' %}"><button class="menu">Criar Notas</button></a>|
+          <a href="{% url 'listarNota' %}"><button class="menu">Listar Notas</button></a>|
+          <a href="{% url 'listarOrdem' %}"><button class="menu">Listar Ordens</button></a>|
+          <a href="{% url 'menu' %}"><button class="menu">Voltar para Menu</button></a>
+        </h1>
+        <div class="container">
+
+                {{ dashboardNota|safe }} 
+                {{ dashboardNotaPie|safe}}
+                <button onclick="toggleFullscreen()">Tela Cheia</button>  
+        <div>
+            
+    </article>
+
+</main>
+
+<script>
+    function toggleFullscreen() {
+        if (screenfull.isEnabled) {
+            screenfull.toggle();
+            // Alternar classes para exibir/ocultar os elementos
+            var dashboardContainer = document.getElementById('dashboard-container');
+            dashboardContainer.classList.toggle('show');  // Adicione ou remova a classe "show"
+        } else {
+            console.log("O navegador não suporta modo de tela cheia.");
+        }
+    }
+</script>
+{% endblock %}

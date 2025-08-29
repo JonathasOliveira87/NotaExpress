@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Criar Nota{% endblock %}
+
+{% block content %}
+
+  <head>
+      <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  </head>
+
+  <main>
+    <article>
+      <h1>
+        <a href="{% url 'menu' %}"><button class="menu">Início</button></a>|
+        <a href="{% url 'criarNota' %}"><button class="menu">Criar Notas</button></a>|
+        <a href="{% url 'listarNota' %}"><button class="menu">Listar Notas</button></a>|
+        <a href="{% url 'listarOrdem' %}"><button class="menu">Listar Ordens</button></a>
+      </h1>
+
+      <form action="{% url 'criarNota' %}" method="post">
+        {% csrf_token %}
+        <h2>Criar Nota</h2> 
+        <div class="content" style="width: 100%;">
+            
+          <label for="title">Título:</label>
+          <input type="text" name="title" id="title" required >
+
+          <label for="opcoes">Setor:</label>
+          <select name="opcoes" id="opcoes" required>
+              <option value="" disabled selected>Selecione um setor</option>
+
+              {% for setor in setores %}
+              <option value="{{ setor.id }}">{{ setor.nomeSetor }}</option>
+              {% endfor %}
+
+          </select>
+
+          <label for="tag" >Tag:</label>
+          <input type="text" name="tag" id="tag" required maxlength="12"><br>
+
+          <label for="data_criacao">Data:</label>
+          <input type="datetime-local" name="data_criacao" id="data_criacao" required>
+          <br><br>
+
+          <label for="cnota">Detalhe o máximo possível do serviço abaixo.</label>
+          <textarea name="cnota" id="cnota" required></textarea>
+
+          <input type="submit" value="Criar Nota">
+  
+        </div>
+      </form>
+ 
+    </article>
+
+  </main>
+
+{% endblock %}

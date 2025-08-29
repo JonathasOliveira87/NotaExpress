@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Informações da Ordem{% endblock %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<main>
+    <article>
+        <h1 class="no-print">
+            <a href="{% url 'menu' %}"><button class="menu">Início</button></a>|
+            <a href="{% url 'criarNota' %}"><button class="menu">Criar Notas</button></a>|
+            <a href="{% url 'listarNota' %}"><button class="menu">Listar Notas</button></a>|
+            <a href="{% url 'listarOrdem' %}"><button class="menu">Listar Ordens</button></a>
+        </h1>
+
+        <div class="container">           
+            <h2>Informações da Nota</h2> 
+            <div class="content" style="width: 100%;">   
+                <div class="nota-detail-item">
+                    <label for="">Título:</label>
+                    <span class="value">{{ nota.titulo }}</span>
+                </div>
+                <div class="nota-detail-item">
+                    <label for="">Nota:</label>
+                    <span class="value">{{ nota.numero|stringformat:"06d" }}</span>
+                </div>
+                <div class="nota-detail-item">
+                    <label for="">Setor:</label>
+                    <span class="value">{{ nota.setor }}</span>
+                </div>
+
+                <div class="nota-detail-item">
+                    <label for="">Tag:</label>
+                    <span class="value">{{ nota.tag }}</span>
+                </div><br>
+                <div class="nota-detail-item">
+                    <label for="">Descrição:</label>
+                    <textarea name="" id="" readonly>{{ nota.descricao }}</textarea>
+                </div>
+                <div class="nota-data">
+                    <label for="">Nota criada em:</label>
+                    <span class="value">{{ nota.data_criacao }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="page-break">
+            <hr class="no-print">
+            <h2 style="padding: 20px 0 0 50px;">Ordem de serviço</h2>
+    
+                <div class="container">
+                    
+                    <div style="margin: 5px;">
+    
+                        <label>Horas de Serviço:</label>
+                        <span id="totalHoras" style="color: brown; font-weight: bolder; margin-right: 10px;">{{ ordem.total_horas }}</span>
+    
+                        <br><br><br>
+    
+                        <h2>Itens para Requisitar</h2> 
+                        <div>
+                            <table id="itensTable" class="infoNotaTabala">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Quantidade</th>
+                                        <th>Preço</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in ordem.itens_requisitados %}
+                                    <tr>
+                                        <td>{{ item.nome }}</td>
+                                        <td>{{ item.quantidade }}</td>
+                                        <td>{{ item.preco }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table> 
+                        </div>
+                        <br><br><br>
+                        <div id="precoTotalContainer">
+                            <label for="precoTotal">Preço Total:</label>
+                            <span id="precoTotal">{{ ordem.preco_total }}</span>
+                        </div>
+                        <br><br><br>
+    
+                        <div class="no-print" style="display:flex; justify-content:space-between; margin:5px; height:auto; width:auto; padding: auto;">
+                            <button style="max-height: 40px;" class="no-print" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+                            {% if ordem.status == 'aberto' %}
+                            <form id="encerrar-ordem-form" style="height:auto; margin:0%; width:auto; padding:0;" action="{% url 'encerrar_ordem' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="encerrar_ordem_id" value="{{ ordem.id }}">
+                                <button id="encerrar-ordem-btn" class="no-print" style="background-color: brown; height: auto; width: auto;"><i class="fas fa-print"></i> Encerrar Ordem</button>
+                            </form>
+
+                            <!-- Popup para confirmar o encerramento da ordem -->
+                            <div id="confirmar-popup-encerrar" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);">
+                                <p>Você tem certeza que deseja encerrar esta ordem?</p><br>
+                                <button id="confirmar-encerramento-sim" style="background-color: brown; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">Sim</button>
+                                <button id="confirmar-encerramento-nao" style="background-color: #ddd; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin-left: 10px;">Não</button>
+                            </div>
+
+                            {% endif %}
+
+                            {% if user.is_staff %}
+                            <form id="finalizar-ordem-form" style="height:auto; margin:0%; width:auto; padding:0;" action="{% url 'finalizar_ordem' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="finalizar_ordem_id" value="{{ ordem.id }}">
+                                <button id="finalizar-ordem-btn" class="no-print" style="background-color: green; height: auto; width: auto;"><i class="fas fa-print"></i> Finalizar Ordem</button>
+                            </form>
+
+                            <!-- Popup para confirmar a finalização da ordem -->
+                            <div id="confirmar-popup-finalizar" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);">
+                                <p>Você tem certeza que deseja finalizar esta ordem?</p><br>
+                                <button id="confirmar-finalizar-sim" style="background-color: brown; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">Sim</button>
+                                <button id="confirmar-finalizar-nao" style="background-color: #ddd; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin-left: 10px;">Não</button>
+                            </div>
+                            {% endif %}
+
+
+                            
+
+                        </div>
+                            
+                        <br><br><br>
+                        <hr>
+                        <div class="nota-data">
+                            <label for="">Ordem criada em:</label>
+                            <span class="value">{{ ordem.data_criacao }}</span>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+    </article>
+</main>
+
+<script>
+    // Ao clicar no botão "Encerrar Ordem", exibir o popup
+    document.getElementById('encerrar-ordem-btn').addEventListener('click', function(event) {
+        event.preventDefault(); // Evita que o formulário seja enviado imediatamente
+        document.getElementById('confirmar-popup-encerrar').style.display = 'block';
+    });
+
+    // Ao clicar em "Sim" no popup, enviar o formulário de encerramento
+    document.getElementById('confirmar-encerramento-sim').addEventListener('click', function() {
+        event.preventDefault();
+        document.getElementById('encerrar-ordem-form').submit();
+    });
+
+    // Ao clicar em "Não" no popup, esconder o popup
+    document.getElementById('confirmar-encerramento-nao').addEventListener('click', function() {
+        document.getElementById('confirmar-popup-encerrar').style.display = 'none';
+    });
+
+
+    // Ao clicar no botão "Finalizar Ordem", exibir o popup
+    document.getElementById('finalizar-ordem-btn').addEventListener('click', function(event) {
+        event.preventDefault(); // Evita que o formulário seja enviado imediatamente
+        document.getElementById('confirmar-popup-finalizar').style.display = 'block';
+    });
+
+
+    // Ao clicar em "Sim" no popup, enviar o formulário de finalização
+    document.getElementById('confirmar-finalizar-sim').addEventListener('click', function() {
+        document.getElementById('finalizar-ordem-form').submit();
+    });
+
+    // Ao clicar em "Não" no popup, esconder o popup
+    document.getElementById('confirmar-finalizar-nao').addEventListener('click', function() {
+        document.getElementById('confirmar-popup-finalizar').style.display = 'none';
+    });
+</script>
+
+
+{% endblock %}

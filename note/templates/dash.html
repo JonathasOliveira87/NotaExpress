@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}DashBoard{% endblock %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/5.1.0/screenfull.min.js"></script>
+</head>
+
+<main class="show">
+
+    <article id="dashboard-container" class="show">  <!-- Adicione um ID ao elemento <article> -->
+        <h1>
+            <a href="{% url 'menu' %}"><button class="menu">Início</button></a>
+        </h1>
+        <div class="container">
+            <div class="content">
+                {{ dashboardNota|safe }} 
+                {{ dashboardNotaPie|safe}}
+            </div>
+        <div>
+            
+    </article>
+
+</main>
+
+{% endblock %}
