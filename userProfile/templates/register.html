@@ -15,7 +15,7 @@
                 <br><br>
                 <h3 style="color: red;">Atenção!</h3><br>
                 <p>"Para acessar, por favor, registre-se e aguarde a aprovação do administrador para prosseguir."</p>
-        
+
                 <form action="{% url 'register_user' %}" method="POST">
 
                     {% csrf_token %}
@@ -25,25 +25,28 @@
                     <p>Cadastre-se agora!</p>
                         <div class="user-form">
 
-                            <input type="text" id="username" name="username" required placeholder="Digite seu nick (apelido)" maxlength="10">
+                            <input type="text" id="username" name="username" required placeholder="Usuário)" maxlength="10">
 
-                            <input type="text" id="firstname" name="firstname" required placeholder="Digite seu primeiro nome"  maxlength="10">
+                            <input type="password" id="password" name="password" required placeholder="Digite sua senha">
 
-                            <input type="text" id="lastname" name="lastname" required placeholder="Digite seu segundo nome"  maxlength="10">
+                            <input type="password" name="confirm-password" id="confirm-password" required minlength="6" placeholder="Confirme a senha do usuário">
 
                             <br><br>
-                 
+
+                            <input type="text" id="firstname" name="firstname" required placeholder="Nome"  maxlength="10">
+
+                            <input type="text" id="lastname" name="lastname" required placeholder="Sobrenome"  maxlength="10">
+
+                            <br><br>
+
                             <input type="email" name="email" id="email" required placeholder="Email do usuário">
 
-              
+
                             <input type="email" name="confirm-email" id="confirm-email" required placeholder="Confirme o email do usuário">
 
                             <br><br>
 
-                            <input type="password" id="password" name="password" required placeholder="Digite sua senha">
-            
-     
-                            <input type="password" name="confirm-password" id="confirm-password" required minlength="6" placeholder="Confirme a senha do usuário">
+
 
                             <input type="submit" value="Cadastrar">
                         </div>
