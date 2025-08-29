@@ -114,6 +114,24 @@ form input[type="password"] {
     border-radius: 0 0 5px 5px;
 }
 
+
+form input[type="password"].input-senha { border-radius: 0; }
+
+
+
+#lastname {
+    width: 100%;
+    padding: 20px;
+    background-color: var(--background-color-form);
+    border: var(--form-border);
+    color: var(--text-color);
+    border-radius: 0 0 5px 5px;
+}
+
+#confirm-email {
+    border-radius: 0 0 5px 5px;
+}
+
 form input[type="password"]::placeholder {
     color: var(--placeholder-color);
 }
